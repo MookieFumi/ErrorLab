@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - ErrorLab.WebUI</title>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("ErrorLab.WebUI", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        <div id="alert_placeholder"></div>
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - ErrorLab.WebUI</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script>
+        var tab = {
+            config: {
+                debug:  @Context.IsDebuggingEnabled.ToString().ToLower(),
+            },
+            utilities: {
+                getErrorForMessage: function (jqXHR) {
+                    var getTitleFromResponseText = function (responseText) {
+                        var i = responseText.indexOf("<title>");
+                        if (i < 0) {
+                            return responseText;
+                        }
+                        var j = responseText.indexOf("</title>");
+                        return responseText.substring(i + ("<title>".length), j);
+                    };
+                    var header = jqXHR.getResponseHeader("content-type");
+                    var contentType = header.substr(0, header.indexOf(";"));
+                    if (contentType === "text/plain") {
+                        return jqXHR.responseText;
+                    }
+                    var message;
+                    if (tab.config.debug) {
+                        message = getTitleFromResponseText(jqXHR.responseText);
+                    } else {
+                        message = "Ha ocurrido un error en la operación";
+                    }
+                    return message;
+                }
+            },
+            bootstrap: {
+                alert: {
+                    createError: function (jqXHR) {
+                        $('#alert_placeholder').css("margin-top", 15);
+                        $('#alert_placeholder').html("<div class='alert alert-danger alert-dismissible fade in' role='alert'><button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>×</span><span class='sr-only'>Close</span></button>" + tab.utilities.getErrorForMessage(jqXHR) + "</div>");
+                    },
+                    createSuccess: function () {
+                        $('#alert_placeholder').css("margin-top", 15);
+                        $('#alert_placeholder').html("<div class='alert alert-success alert-dismissible fade in' role='alert'><button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>×</span><span class='sr-only'>Close</span></button>" + "Operación finalizada con éxito" + "</div>");
+                    }
+                }
+            }
+        };
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

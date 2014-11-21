@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Errores Lab ASP.NET</h1>
+    <p class="lead">Tratamiento de errores en una aplicación MVC5</p>
+    <ul>
+        <li>Registro de errores (Cuales sí/ no)</li>
+        <li>¿Qué información se muestra al usuario/ y en desarrollo?</li>
+        <li>¿Por qué dos páginas de error (Error.html/ Error.cshtml)</li>
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <h2>AppException Ajax</h2>
+        <p>
+            Tanto en debug como en release debe aparecer la misma información ya que debe mostrar información del error de lógica de negocio. No la registramos en el logger. El error no es manejeado.
+        </p>
+        <a class="btn btn-danger" data-action="appException">AppExcepction Ajax</a>
+    </div>
+    <div class="col-lg-6">
+        <h2>Exception Ajax</h2>
+        <p>En debug debe aparecer el detalle del error pero en release esa información no es relevante. Se registra en el logger. El error no es manejado.</p>
+        <a class="btn btn-danger" data-action="exception">Exception Ajax</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <h2>AppException/ Exception Ajax</h2>
+        <p>No es recomendable manejar los errores para evitar devolver un 200 y tener que hacer un if en el done de la promesa</p>
+        <a class="btn btn-danger" data-action="invokeAppExceptionWithTryCatch">AppException/ Exception Ajax</a>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-lg-6">
+        <h2>AppException (No Ajax)</h2>
+        <p>Si la excepción no la manejamos (try-catch), iremos a la página de error.</p>
+        @using (Html.BeginForm("InvokeAppException", "Home", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            <button type="submit" class="btn btn-danger" id="btnCreate">
+                AppException (No Ajax)
+            </button>
+        }
+    </div>
+    <div class="col-lg-6">
+        <h2>Exception (No Ajax)</h2>
+        <p>Si la excepción no la manejamos (try-catch), iremos a la página de error ocultando la información detallada del error en release</p>
+        @using (Html.BeginForm("InvokeError", "Home", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            <button type="submit" class="btn btn-danger" id="btnCreate">
+                Exception (No Ajax)
+            </button>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <h2>AppException (No Ajax)</h2>
+        <p>Si la excepción la manejamos (try-catch), mostraremos la información</p>
+        @Html.ActionLink("About", "About", "Home", null, new { @class = "btn btn-danger" })
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $("[data-action='appException']").on("click", function (e) {
+            var url = '@Url.Action("InvokeAppException")';
+
+            $.post(url, function (data) {
+            }).done(function (jqXHR, textStatus, errorThrown) {
+                tab.bootstrap.alert.createSuccess();
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                tab.bootstrap.alert.createError(jqXHR);
+            });
+        });
+
+        $("[data-action='exception']").on("click", function (e) {
+            var url = '@Url.Action("InvokeError")';
+
+            $.post(url, function (data) {
+            }).done(function (jqXHR, textStatus, errorThrown) {
+                tab.bootstrap.alert.createSuccess();
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                tab.bootstrap.alert.createError(jqXHR);
+            });
+        });
+
+        $("[data-action='invokeAppExceptionWithTryCatch']").on("click", function (e) {
+            var url = '@Url.Action("Invoke")';
+
+            $.post(url, function (data) {
+            }).done(function (jqXHR, textStatus, errorThrown) {
+                tab.bootstrap.alert.createSuccess();
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                tab.bootstrap.alert.createError(jqXHR);
+            });
+        });
+
+    </script>
+}
