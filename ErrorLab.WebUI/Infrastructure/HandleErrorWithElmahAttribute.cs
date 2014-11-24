@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Configuration;
 using System.Net;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using Elmah;
 
@@ -8,13 +10,40 @@ namespace ErrorLab.WebUI.Infrastructure
 {
     public class HandleErrorWithElmahAttribute : HandleErrorAttribute
     {
+        private bool IsCustomErrorEnabled(bool treatRemoteOnlyLikeEnabled)
+        {
+            var customErrorsSection = (CustomErrorsSection)ConfigurationManager.GetSection("system.web/customErrors");
+            CustomErrorsMode mode = customErrorsSection.Mode;
+            bool retval = false;
+            switch (mode)
+            {
+                case CustomErrorsMode.RemoteOnly:
+                    if (!treatRemoteOnlyLikeEnabled)
+                    {
+                        retval = !HttpContext.Current.Request.IsLocal;
+                    }
+                    else
+                    {
+                        retval = true;
+                    }
+                    break;
+                case CustomErrorsMode.On:
+                    retval = true;
+                    break;
+                case CustomErrorsMode.Off:
+                    retval = false;
+                    break;
+            }
+            return retval;
+        }
+
         public override void OnException(ExceptionContext context)
         {
             var e = context.Exception;
             var httpContext = context.HttpContext;
 
             if ((e is AppException)
-                && httpContext.IsCustomErrorEnabled
+                && IsCustomErrorEnabled(true)
                 && httpContext.Request.IsAjaxRequest())
             {
                 var response = httpContext.Response;
@@ -22,6 +51,7 @@ namespace ErrorLab.WebUI.Infrastructure
                 response.ContentType = "text/plain";
                 response.Write(e.Message);
                 context.ExceptionHandled = true;
+                response.TrySkipIisCustomErrors = true;
                 return;
             }
             base.OnException(context);
