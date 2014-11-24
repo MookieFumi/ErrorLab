@@ -21,7 +21,7 @@ namespace ErrorLab.WebUI.Controllers
         {
             try
             {
-                throw new AppException("Es un error de lógica de negocio.");
+                throw new AppException(App_GlobalResources.Resources.EsUnErrorDeLogicaDeNegocio);
             }
             catch (AppException e)
             {
@@ -37,7 +37,7 @@ namespace ErrorLab.WebUI.Controllers
         {
             try
             {
-                throw new AppException("Contact Exception");
+                throw new AppException(App_GlobalResources.Resources.EsUnErrorDeLogicaDeNegocio);
             }
             catch (AppException e)
             {
@@ -53,7 +53,7 @@ namespace ErrorLab.WebUI.Controllers
         [HttpPost]
         public ActionResult InvokeAppException()
         {
-            throw new AppException("Es un error de lógica de negocio.");
+            throw new AppException(App_GlobalResources.Resources.EsUnErrorDeLogicaDeNegocio);
         }
 
         [HttpPost]
