@@ -130,6 +130,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AppException.cs" />
+    <Compile Include="Infrastructure\ApplicationUtilities.cs" />
     <Compile Include="Infrastructure\JsonNetResult.cs" />
     <Compile Include="Infrastructure\ElmahUtilities.cs" />
     <Compile Include="Infrastructure\HandleErrorWithElmahAttribute.cs" />

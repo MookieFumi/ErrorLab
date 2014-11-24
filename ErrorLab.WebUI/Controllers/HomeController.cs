@@ -14,7 +14,6 @@ namespace ErrorLab.WebUI.Controllers
     {
         public ActionResult Index()
         {
-
             return View();
         }
 
@@ -26,7 +25,6 @@ namespace ErrorLab.WebUI.Controllers
             }
             catch (AppException e)
             {
-
                 ViewBag.Error = e.Message;
             }
 
